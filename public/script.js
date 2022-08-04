@@ -13,7 +13,7 @@ form.addEventListener('submit', (event) => {
     .then(data => {
       message.innerHTML = `
         <p>You successfully submitted the following url:<br /> ${data.original_url}</p>
-        <p>Use <a href="${data.short_url}" target="blank">${data.short_url}</a> as the shortened version.</p>
+        <p>Use <a href="${data.newUrl}" target="_blank">${data.newUrl}</a> as the shortened version.</p>
       `;
     });
 })

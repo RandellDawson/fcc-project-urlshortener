@@ -1,30 +1,27 @@
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-require('dotenv').config();
-import { customAlphabet } from 'nanoid';
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import shortUrlRoutes from './routes/short-url.js';
+
 const app = express();
-const nanoid  = customAlphabet('1234567890abcdef', 10);
 
 app.use(cors());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
-
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (_, res) => {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-app.post('/api/shorturl', (req, res) => {
-  const { url } = req.body;
-  const id = nanoid();
-  res.json({
-    original_url: url,
-    short_url: `${process.env.BASE_URL}/api/shorturl/${id}` 
-  });
+app.use('/api', shortUrlRoutes);
+
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 const listener = app.listen(process.env.PORT, () => {
