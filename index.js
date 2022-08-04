@@ -1,8 +1,12 @@
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 require('dotenv').config();
+import { customAlphabet } from 'nanoid';
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
+const nanoid  = customAlphabet('1234567890abcdef', 10);
 
 app.use(cors());
 
@@ -11,17 +15,15 @@ app.use('/public', express.static(`${process.cwd()}/public`));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (_, res) => {
-  res.sendFile(__dirname + '/views/index.html', {
-    message: ''
-  });
+  res.sendFile(process.cwd() + '/views/index.html');
 });
 
 app.post('/api/shorturl', (req, res) => {
   const { url } = req.body;
-  console.log(url);
+  const id = nanoid();
   res.json({
     original_url: url,
-    short_url: Math.round((Math.random() + 1) * 1000000000000)
+    short_url: `${process.env.BASE_URL}/api/shorturl/${id}` 
   });
 });
 
