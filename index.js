@@ -4,22 +4,27 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
 
-// Basic Configuration
-const port = process.env.PORT || 3000;
-
 app.use(cors());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
-app.get('/', function(req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.get('/', (_, res) => {
+  res.sendFile(__dirname + '/views/index.html', {
+    message: ''
+  });
 });
 
-// Your first API endpoint
-app.get('/api/hello', function(req, res) {
-  res.json({ greeting: 'hello API' });
+app.post('/api/shorturl', (req, res) => {
+  const { url } = req.body;
+  console.log(url);
+  res.json({
+    original_url: url,
+    short_url: Math.round((Math.random() + 1) * 1000000000000)
+  });
 });
 
-app.listen(port, function() {
-  console.log(`Listening on port ${port}`);
+const listener = app.listen(process.env.PORT, () => {
+  console.log('App is listening on port ' + listener.address().port);
 });
