@@ -1,5 +1,5 @@
 import { customAlphabet } from 'nanoid';
-import Url from './../models/url.js'
+import Url from '../models/url.js'
 import dns from 'dns';
 import { URL } from 'url';
 

@@ -9,11 +9,11 @@ const app = express();
 
 app.use(cors());
 
-app.use('/public', express.static(`${process.cwd()}/public`));
+app.use('/public', express.static(`${process.cwd()}/app/public`));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (_, res) => {
-  res.sendFile(process.cwd() + '/views/index.html');
+  res.sendFile(process.cwd() + '/app/views/index.html');
 });
 
 app.use('/api', shortUrlRoutes);
