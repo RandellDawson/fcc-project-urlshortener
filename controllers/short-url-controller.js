@@ -3,21 +3,20 @@ import Url from './../models/url.js'
 
 const nanoid = customAlphabet('1234567890abcdefgh', 8);
 
-
 const processUrl = async (req, res, next) => {
   const { url } = req.body;
-
-  const _id = nanoid();
+  const existingId = await findExistingUrl(url);
+  const _id = existingId ?? nanoid();
   const newUrl = `${process.env.BASE_URL}/api/shorturl/${_id}`;
-  const shortUrlRecord = new Url({
-    _id,
-    originalUrl: url
-  });
-
   try {
-    const saveRecord = await shortUrlRecord.save();
-    const { originalUrl: original_url, _id: short_url } = saveRecord;
-    res.json({ original_url, short_url, newUrl });
+    if (!existingId) {
+      const shortUrlRecord = new Url({
+        _id,
+        originalUrl: url
+      });
+      const saveRecord = await shortUrlRecord.save();
+    }
+    res.json({ original_url: url, short_url: _id, newUrl });
   }
   catch (err) {
     console.log(err);
@@ -37,5 +36,18 @@ const findId = async (req, res, next) => {
   }
 };
 
+const findExistingUrl = async (url) => {
+  const urlRecord = await Url.findOne({ originalUrl: url }).exec();
+  if (urlRecord) {
+    const { _id } = urlRecord;
+    return _id;
+  }
+  return null;
+};
 
-export { processUrl, findId };
+
+export {
+  processUrl,
+  findId,
+  findExistingUrl
+};
