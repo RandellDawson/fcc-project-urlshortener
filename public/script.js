@@ -11,9 +11,9 @@ form.addEventListener('submit', (event) => {
   })
     .then(res => res.json())
     .then(data => {
-      message.innerHTML = `
-        <p>You successfully submitted the following url:<br /> ${data.original_url}</p>
-        <p>Use <a href="${data.newUrl}" target="_blank">${data.newUrl}</a> as the shortened version.</p>
-      `;
+      message.innerHTML = data.error
+        ? `<p>Unable to create short url for submitted url:<br /> ${formData.get('url')}</p>`
+        : `<p>You successfully submitted the following url:<br />${data.original_url}</p>
+           <p>Use <a href="${data.newUrl}" target="_blank">${data.newUrl}</a> as the shortened version.</p>`;
     });
 })

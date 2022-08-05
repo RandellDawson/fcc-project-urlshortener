@@ -1,26 +1,48 @@
 import { customAlphabet } from 'nanoid';
 import Url from './../models/url.js'
+import dns from 'dns';
+import { URL } from 'url';
 
+const dnsPromises = dns.promises;
 const nanoid = customAlphabet('1234567890abcdefgh', 8);
+
+const errResponse = { error: 'invalid url' };
+
+const isValidUrl = async (url) => {
+  const urlObj = new URL(url);
+  const { hostname, protocol } = urlObj;
+  try {
+    const dnsLookup = await dnsPromises.lookup(hostname);
+    return /^https?:/.test(protocol) && dnsLookup;
+  }
+  catch(err) {
+    return false;
+  }
+};
 
 const processUrl = async (req, res, next) => {
   const { url } = req.body;
   const existingId = await findExistingUrl(url);
   const _id = existingId ?? nanoid();
   const newUrl = `${process.env.BASE_URL}/api/shorturl/${_id}`;
+
   try {
+    if (!(await isValidUrl(url))) {
+      res.json(errResponse);
+      return;
+    }
+
     if (!existingId) {
       const shortUrlRecord = new Url({
         _id,
         originalUrl: url
       });
-      const saveRecord = await shortUrlRecord.save();
+      await shortUrlRecord.save();
     }
     res.json({ original_url: url, short_url: _id, newUrl });
   }
   catch (err) {
-    console.log(err);
-    next();
+    res.json(errResponse);
   };
 };
 
@@ -44,7 +66,6 @@ const findExistingUrl = async (url) => {
   }
   return null;
 };
-
 
 export {
   processUrl,
