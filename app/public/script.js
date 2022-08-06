@@ -1,4 +1,5 @@
 const form = document.getElementById('short-url-form');
+const input = document.getElementById('url_input');
 const message = document.getElementById('message');
 
 form.addEventListener('submit', (event) => {
@@ -11,6 +12,7 @@ form.addEventListener('submit', (event) => {
   })
     .then(res => res.json())
     .then(data => {
+      input.value = '';
       message.innerHTML = data.error
         ? `<p>Unable to create short url for submitted url:<br /> ${formData.get('url')}</p>`
         : `<p>You successfully submitted the following url:<br />${data.original_url}</p>
