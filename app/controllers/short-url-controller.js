@@ -24,7 +24,10 @@ const processUrl = async (req, res, next) => {
   const { url } = req.body;
   const existingId = await findExistingUrl(url);
   const _id = existingId ?? nanoid();
-  const newUrl = `${process.env.BASE_URL}/api/shorturl/${_id}`;
+  const baseUrl = req.hostname.includes('localhost')
+    ? `http://localhost:${process.env.PORT}`
+    : `https://${req.hostname}`
+  const newUrl = `${baseUrl}/api/shorturl/${_id}`;
 
   try {
     if (!(await isValidUrl(url))) {
