@@ -12,7 +12,9 @@ app.use(cors());
 app.use('/public', express.static(`${process.cwd()}/app/public`));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/', (_, res) => {
+app.get('/', (req, res) => {
+  console.log('logging hostname')
+  console.log(req.hostname)
   res.sendFile(process.cwd() + '/app/views/index.html');
 });
 
